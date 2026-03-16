@@ -1,8 +1,11 @@
 package org.example;
 
-import java.util.List;
+import java.io.File;
+import java.util.*;
 
-public class Student {
+import static java.util.Collections.sort;
+
+public class Student{
 
     int nrMatricol;
     String prenume;
@@ -17,9 +20,9 @@ public class Student {
     }
 
     public void afiseaza(){
-        System.out.println(nrMatricol);
-        System.out.println(prenume);
-        System.out.println(nume);
+        System.out.print(nrMatricol+" ");
+        System.out.print(prenume+" ");
+        System.out.print(nume+" ");
         System.out.println(formatieDeStudiu);
     }
     @Override
@@ -28,19 +31,27 @@ public class Student {
       return msg;
     }
 
-    public static boolean Prezenta(List<Student> studenti, Student studentCautat){
-        for(Student student:studenti){
-            if(student.equals(studentCautat))
-                return true;
-        }
-        return false;
-    }
      @Override
     public boolean equals(Object o){
         if(this.nume.equals(((Student)o).nume) && this.prenume.equals(((Student)o).prenume) && this.formatieDeStudiu.equals(((Student)o).formatieDeStudiu))
             return true;
         return false;
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(prenume, nume, formatieDeStudiu);
+    }
+
+    /*
+    @Override
+    public int compareTo(Student o) {
+        int cmp=this.nume.compareTo(o.nume);
+        if(cmp!=0)
+            return cmp;
+        return Integer.compare(this.nrMatricol,o.nrMatricol);
+    }
+    */
 
 
 }
