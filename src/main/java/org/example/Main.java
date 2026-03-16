@@ -3,7 +3,6 @@ package org.example;
 import java.io.File;
 import java.util.*;
 
-import static java.sql.Types.NULL;
 import static java.util.Collections.sort;
 
 
@@ -39,7 +38,7 @@ public class Main {
             fin=new Scanner(fisier);
             while(fin.hasNext()){
                 String[] vecStudent=fin.nextLine().split(",");
-                int nrM=Integer.valueOf(vecStudent[0]);
+                String nrM=vecStudent[0];
                 String p=vecStudent[1];
                 String n=vecStudent[2];
                 String fS=vecStudent[3];
@@ -56,6 +55,37 @@ public class Main {
             fin.close();
         }
 
+
+
+    }
+    static Map<String,Integer> citireNote( Map<String, Integer> note, String numeFisier)
+    {
+
+        Scanner fin=null;
+        try{
+            File fisier=new File(numeFisier);
+            fin=new Scanner(fisier);
+            while(fin.hasNext()){
+                String noteVec[]=fin.nextLine().split(",");
+                String nrMatricol=noteVec[0];
+                Integer note1=Integer.valueOf(noteVec[1]);
+                note.put(nrMatricol, note1);
+            }
+            return note;
+        }
+        catch(Exception e){
+
+            System.err.println("A apărut o eroare la citire: " + e.getMessage());
+            throw new RuntimeException("Fisierul nu a fost gasit!");
+        }
+        finally{
+            fin.close();
+        }
+
+    }
+
+    static Integer nota(Map<String, Integer> note, Student student){
+        return note.get(student.nrMatricol);
     }
 
     static void main() {
@@ -66,7 +96,7 @@ public class Main {
         Student student4 = new Student(3571, "Adrian", "Dumitru", "A312");
         Student student5 = new Student(3572, "Ioana", "Stancu", "C221");
         Student student6 = new Student(3573, "Cristian", "Marin", "B114");
-        Student student7 = new Student(3574, "Sofia", "Dragomir", "A312");
+        Student studentDeCautat = new Student(3574, "Sofia", "Dragomir", "A312");
         */
 
         List<Student> studenti=new ArrayList<>();
@@ -77,10 +107,10 @@ public class Main {
         studenti.add(student4);
         studenti.add(student5);
         studenti.add(student6);
-        studenti.add(student7);
+        studenti.add(studentDeCautat);
          */
         studenti= citire("StudentiFisier.csv");
-        Student student8 = new Student(NULL, "Sofia", "Dragomir", "A312");
+        Student student8 = new Student(null, "Sofia", "Dragomir", "A312");
 
         Set<Student> set=new HashSet<>(studenti); ///se copiaza lista in HashSet
 
@@ -91,6 +121,10 @@ public class Main {
 
         sortareStudentiDupaFormatieDeStudiuSiNume(studenti);
         afisareLista(studenti);
+        Map<String, Integer> note=new HashMap<>();
+        citireNote(note, "Note.csv");
+        Student studentDeCautat = new Student("3574", "Sofia", "Dragomir", "A312");
+        System.out.println("Studentul cu numarul matricol 3574 are nota: "+nota(note, studentDeCautat));
     }
 
 }

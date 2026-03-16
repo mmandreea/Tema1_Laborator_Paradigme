@@ -7,12 +7,12 @@ import static java.util.Collections.sort;
 
 public class Student{
 
-    int nrMatricol;
+    String nrMatricol;
     String prenume;
     String nume;
     String formatieDeStudiu;
 
-    public Student(int nrM, String p, String n, String fS){
+    public Student(String nrM, String p, String n, String fS){
         this.nrMatricol=nrM;
         this.prenume=p;
         this.nume=n;
