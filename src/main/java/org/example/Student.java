@@ -43,6 +43,10 @@ public class Student{
         return Objects.hash(prenume, nume, formatieDeStudiu);
     }
 
+    public String getNrMatricol() {
+        return nrMatricol;
+    }
+
     /*
     @Override
     public int compareTo(Student o) {

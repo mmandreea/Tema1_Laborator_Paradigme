@@ -77,9 +77,28 @@ public class Main {
 
     }
 
+    static Map<Student, Integer> createMap(List<Student> studenti, Map<String, Integer> note) {
+
+        Map<Student, Integer> noteStudenti = new HashMap<>();
+        for (Student s : studenti) {
+            noteStudenti.put(s, note.get(s.getNrMatricol()));
+        }
+        return noteStudenti;
+    }
+
+    static void printNotaStudent(Student studentCautat, Map<Student, Integer> noteStudenti) {
+
+        Integer nota = noteStudenti.get(studentCautat);
+        if (nota == null)
+            System.out.println("Studentul nu are o nota inregistrata!");
+        else
+            System.out.println("Studentul are nota " + nota);
+    }
+
     static Integer nota(Map<String, Integer> note, Student student) {
         return note.get(student.nrMatricol);
     }
+
     static Integer notaStudent(Map<Student, Integer> note, Student student) {
         return note.get(student);
     }
@@ -121,6 +140,14 @@ public class Main {
         citireNote(note, "Note.csv");
         Student studentDeCautat = new Student("3574", "Sofia", "Dragomir", "A312");
         System.out.println("Studentul cu numarul matricol 3574 are nota: " + nota(note, studentDeCautat));
+
+        /*
+         creeaza CreateMap astfel incat cautarea sa mearga fara a stii numarul matricol, avand doar obiectul de Student
+        */
+        Map<Student, Integer> noteStudent = new HashMap<>();
+        noteStudent = createMap(studenti, note);
+        Student student1 = new Student("3568", "Andreea", "Mata", "C221");
+        printNotaStudent(student1, noteStudent);
     }
 
 }
