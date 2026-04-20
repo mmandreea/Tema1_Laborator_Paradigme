@@ -148,6 +148,12 @@ public class Main {
         noteStudent = createMap(studenti, note);
         Student student1 = new Student("3568", "Andreea", "Mata", "C221");
         printNotaStudent(student1, noteStudent);
+
+
+        ExportConfig conf1=new ExportConfig("Lista1.csv", "Studenti1");
+        Exporter e1=new Exporter(conf1, studenti);
+        e1.exportInAFile();
+
     }
 
 }
