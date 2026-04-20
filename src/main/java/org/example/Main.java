@@ -8,7 +8,7 @@ import static java.util.Collections.sort;
 
 public class Main {
 
-    static void sortareStudentiDupaFormatieDeStudiuSiNume(List<Student> lista) {
+    public static void sortareStudentiDupaFormatieDeStudiuSiNume(List<Student> lista) {
         sort(lista, new Comparator<Student>() {
             public int compare(Student s1, Student s2) {
                 if (s1.formatieDeStudiu.equals(s2.formatieDeStudiu))
@@ -54,7 +54,7 @@ public class Main {
 
     }
 
-    static Map<String, Integer> citireNote(Map<String, Integer> note, String numeFisier) {
+    public static Map<String, Integer> citireNote(Map<String, Integer> note, String numeFisier) {
 
         Scanner fin = null;
         try {
@@ -77,7 +77,7 @@ public class Main {
 
     }
 
-    static Map<Student, Integer> createMap(List<Student> studenti, Map<String, Integer> note) {
+    public static Map<Student, Integer> createMap(List<Student> studenti, Map<String, Integer> note) {
 
         Map<Student, Integer> noteStudenti = new HashMap<>();
         for (Student s : studenti) {
@@ -99,7 +99,7 @@ public class Main {
         return note.get(student.nrMatricol);
     }
 
-    static Integer notaStudent(Map<Student, Integer> note, Student student) {
+    public static Integer notaStudent(Map<Student, Integer> note, Student student) {
         return note.get(student);
     }
 

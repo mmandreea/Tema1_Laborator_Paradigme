@@ -7,10 +7,10 @@ import static java.util.Collections.sort;
 
 public class Student{
 
-    String nrMatricol;
-    String prenume;
-    String nume;
-    String formatieDeStudiu;
+    final String nrMatricol;
+    final String prenume;
+    final String nume;
+    final String formatieDeStudiu;
 
     public Student(String nrM, String p, String n, String fS){
         this.nrMatricol=nrM;
@@ -47,6 +47,13 @@ public class Student{
         return nrMatricol;
     }
 
+    public String getFormatieDeStudiu() {
+        return formatieDeStudiu;
+    }
+
+    public String getNume() {
+        return nume;
+    }
     /*
     @Override
     public int compareTo(Student o) {
