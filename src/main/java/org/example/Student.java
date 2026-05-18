@@ -54,6 +54,10 @@ public class Student{
     public String getNume() {
         return nume;
     }
+
+    public String getPrenume() {
+        return prenume;
+    }
     /*
     @Override
     public int compareTo(Student o) {

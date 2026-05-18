@@ -124,7 +124,9 @@ public class Main {
         studenti.add(student6);
         studenti.add(studentDeCautat);
          */
-        studenti = citire("StudentiFisier.csv");
+
+        Map<Student, Integer> noteStudent = new HashMap<>();
+        importStudentiNote(studenti, noteStudent, getImporterFromFile("StudentiFisier.csv", "Note.csv"));
         Student student8 = new Student(null, "Sofia", "Dragomir", "A312");
 
         Set<Student> set = new HashSet<>(studenti); ///se copiaza lista in HashSet
@@ -144,15 +146,51 @@ public class Main {
         /*
          creeaza CreateMap astfel incat cautarea sa mearga fara a stii numarul matricol, avand doar obiectul de Student
         */
-        Map<Student, Integer> noteStudent = new HashMap<>();
-        noteStudent = createMap(studenti, note);
+        //Map<Student, Integer> noteStudent = new HashMap<>();
+        //noteStudent = createMap(studenti, note);
         Student student1 = new Student("3568", "Andreea", "Mata", "C221");
         printNotaStudent(student1, noteStudent);
 
+       exportList(studenti, getExporterToFile("fisier.xlsx"));
 
-        ExportConfig conf1=new ExportConfig("Lista1.csv", "Studenti1");
-        Exporter e1=new Exporter(conf1, studenti);
-        e1.exportInAFile();
+    }
+
+    private static void exportList(List<Student> list, Exporter exporter){
+        exporter.export(list);
+    }
+    private static Exporter getExporterToFile(String fileName){
+
+        System.out.println("Andreea");
+        String fileExtension=fileName.substring(fileName.lastIndexOf('.'));
+        switch(fileExtension){
+            case ".xlsx":
+                return new ExportToExcel(fileName);
+            case ".csv":
+                return new ExportToFile(fileName);
+            default:
+                throw new IllegalArgumentException("Unknown file extension "+fileName);
+        }
+
+
+    }
+
+    private static void importStudentiNote(List<Student> studenti, Map<Student, Integer> note, Import importer){
+        studenti=importer.importStudenti();
+        note=importer.importNote(studenti);
+    }
+    private static Import getImporterFromFile(String... values){
+
+        System.out.println("Andreea");
+        String fileExtension=values[0].substring(values[0].lastIndexOf('.')).toLowerCase();
+        switch(fileExtension){
+            case ".xlsx":
+                return new ImportFromExcel(values[0]);
+            case ".csv":
+                return new ImportFromFile(values[0], values[1]);
+            default:
+                throw new IllegalArgumentException("Unknown file extension "+values[0]);
+        }
+
 
     }
 
