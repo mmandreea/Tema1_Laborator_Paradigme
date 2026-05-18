@@ -2,6 +2,8 @@ package org.example;
 
 import java.io.File;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.sort;
 
@@ -11,9 +13,9 @@ public class Main {
     public static void sortareStudentiDupaFormatieDeStudiuSiNume(List<Student> lista) {
         sort(lista, new Comparator<Student>() {
             public int compare(Student s1, Student s2) {
-                if (s1.formatieDeStudiu.equals(s2.formatieDeStudiu))
-                    return s1.nume.compareTo(s2.nume);
-                return s1.formatieDeStudiu.compareTo(s2.formatieDeStudiu);
+                if (s1.formatieDeStudiu().equals(s2.formatieDeStudiu()))
+                    return s1.nume().compareTo(s2.nume());
+                return s1.formatieDeStudiu().compareTo(s2.formatieDeStudiu());
             }
         });
     }
@@ -96,7 +98,7 @@ public class Main {
     }
 
     static Integer nota(Map<String, Integer> note, Student student) {
-        return note.get(student.nrMatricol);
+        return note.get(student.nrMatricol());
     }
 
     public static Integer notaStudent(Map<Student, Integer> note, Student student) {
@@ -148,13 +150,65 @@ public class Main {
         */
         //Map<Student, Integer> noteStudent = new HashMap<>();
         //noteStudent = createMap(studenti, note);
-        Student student1 = new Student("3568", "Andreea", "Mata", "C221");
-        printNotaStudent(student1, noteStudent);
+        //Student student1 = new Student("3568", "Andreea", "Mata", "C221");
+        //printNotaStudent(student1, noteStudent);
 
        exportList(studenti, getExporterToFile("fisier.xlsx"));
 
-    }
+        noteStudent.entrySet().stream()
+                .filter(pereche -> pereche.getValue() == 10)
+                .forEach(pereche -> pereche.getKey().afiseaza());
 
+        System.out.println("-------------------------------------------------------------------------------------------------");
+
+        noteStudent.entrySet().stream()
+                .filter(pereche -> pereche.getValue() <=4)
+                .forEach(pereche -> pereche.getKey().afiseaza());
+
+        System.out.println("-------------------------------------------------------------------------------------------------");
+
+        int sumaNotelor = noteStudent.values().stream()
+                // Acum prin stream curg doar numere (ex: 8, 10, 9, 10)
+                .reduce(0, (acc, nota) -> acc + nota);
+
+        int numarNote=noteStudent.size();
+        System.out.println("Media Notelor este: "+ sumaNotelor/(numarNote*1.0));
+
+        System.out.println("-------------------------------------------------------------------------------------------------");
+
+        Map<Integer, Integer> frecventaNote = noteStudent.values().stream()
+                .collect(Collectors.groupingBy(
+                        Function.identity(),
+                        Collectors.summingInt(nota -> 1) // Pentru fiecare notă, adunăm 1
+                ));
+        System.out.println("Frecvența notelor este: ");
+        frecventaNote.forEach((nota, numarAparitii) ->
+                System.out.println("Nota " + nota + " apare de " + numarAparitii + " ori.")
+        );
+
+        System.out.println("-------------------------------------------------------------------------------------------------");
+
+        List<Student> listaSemigrupa1=studenti.stream()
+                .sorted()
+                .limit(studenti.size()/2)
+                .map(s -> new Student(s.nrMatricol(), s.prenume(), s.nume(), "Semigrupa 1"))
+                .collect(Collectors.toList());
+
+
+        List<Student> listaSemigrupa2=studenti.stream()
+                .sorted()
+                .skip(studenti.size()/2)
+                .map(s -> new Student(s.nrMatricol(), s.prenume(), s.nume(), "Semigrupa 2"))
+                .collect(Collectors.toList());
+        System.out.println("Semigrupa1: ");
+        for(Student s:listaSemigrupa1){
+            s.afiseaza();
+        }
+        System.out.println("Semigrupa2: ");
+        for(Student s:listaSemigrupa2){
+            s.afiseaza();
+        }
+    }
     private static void exportList(List<Student> list, Exporter exporter){
         exporter.export(list);
     }
@@ -175,8 +229,15 @@ public class Main {
     }
 
     private static void importStudentiNote(List<Student> studenti, Map<Student, Integer> note, Import importer){
-        studenti=importer.importStudenti();
-        note=importer.importNote(studenti);
+        // Golim colecțiile primite pentru siguranță (opțional)
+        studenti.clear();
+        note.clear();
+
+        // Adăugăm TOATE elementele returnate de importer în lista originală
+        studenti.addAll(importer.importStudenti());
+
+        // Adăugăm TOATE perechile returnate de importer în map-ul original
+        note.putAll(importer.importNote(studenti));
     }
     private static Import getImporterFromFile(String... values){
 
