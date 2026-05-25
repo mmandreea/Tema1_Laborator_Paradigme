@@ -50,6 +50,7 @@ public record Student(
                 formatieDeStudiu.equals(student.formatieDeStudiu);
     }
 
+
     // 4. Suprascriem hashCode pentru a fi sincronizat cu equals-ul de mai sus
     @Override
     public int hashCode() {

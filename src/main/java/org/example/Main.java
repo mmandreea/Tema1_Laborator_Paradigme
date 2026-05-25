@@ -10,15 +10,7 @@ import static java.util.Collections.sort;
 
 public class Main {
 
-    public static void sortareStudentiDupaFormatieDeStudiuSiNume(List<Student> lista) {
-        sort(lista, new Comparator<Student>() {
-            public int compare(Student s1, Student s2) {
-                if (s1.formatieDeStudiu().equals(s2.formatieDeStudiu()))
-                    return s1.nume().compareTo(s2.nume());
-                return s1.formatieDeStudiu().compareTo(s2.formatieDeStudiu());
-            }
-        });
-    }
+
 
     static void afisareLista(List<Student> studenti) {
         for (Student s : studenti) {
@@ -26,9 +18,7 @@ public class Main {
         }
     }
 
-    public static boolean prezenta(Set<Student> studenti, Student studentCautat) {
-        return studenti.contains(studentCautat);
-    }
+
 
     public static List<Student> citire(String numeFisier) {
         List<Student> lista = new ArrayList<>();
@@ -79,14 +69,7 @@ public class Main {
 
     }
 
-    public static Map<Student, Integer> createMap(List<Student> studenti, Map<String, Integer> note) {
 
-        Map<Student, Integer> noteStudenti = new HashMap<>();
-        for (Student s : studenti) {
-            noteStudenti.put(s, note.get(s.getNrMatricol()));
-        }
-        return noteStudenti;
-    }
 
     static void printNotaStudent(Student studentCautat, Map<Student, Integer> noteStudenti) {
 
@@ -97,15 +80,10 @@ public class Main {
             System.out.println("Studentul are nota " + nota);
     }
 
-    static Integer nota(Map<String, Integer> note, Student student) {
-        return note.get(student.nrMatricol());
-    }
-
-    public static Integer notaStudent(Map<Student, Integer> note, Student student) {
-        return note.get(student);
-    }
 
     static void main() {
+
+        Catalog catalog=Catalog.getInstance();
         /*
         Student student1=new Student(3568, "Andreea", "Mata", "C221");
         Student student2 = new Student(3569, "Matei", "Ionescu", "C221");
@@ -128,22 +106,23 @@ public class Main {
          */
 
         Map<Student, Integer> noteStudent = new HashMap<>();
-        importStudentiNote(studenti, noteStudent, getImporterFromFile("StudentiFisier.csv", "Note.csv"));
+        catalog.importStudentiNote(studenti, noteStudent, catalog.getImporterFromFile("StudentiFisier.csv", "Note.csv"));
         Student student8 = new Student(null, "Sofia", "Dragomir", "A312");
 
         Set<Student> set = new HashSet<>(studenti); ///se copiaza lista in HashSet
 
-        if (prezenta(set, student8))
+        if (catalog.prezenta(set, student8))
             System.out.println("Studentul se afla in sala de curs.");
         else
             System.out.println("Studentul NU se afla in sala de curs.");
 
-        sortareStudentiDupaFormatieDeStudiuSiNume(studenti);
+
+        catalog.sortareStudentiDupaFormatieDeStudiuSiNume(studenti);
         afisareLista(studenti);
         Map<String, Integer> note = new HashMap<>();
         citireNote(note, "Note.csv");
         Student studentDeCautat = new Student("3574", "Sofia", "Dragomir", "A312");
-        System.out.println("Studentul cu numarul matricol 3574 are nota: " + nota(note, studentDeCautat));
+        System.out.println("Studentul cu numarul matricol 3574 are nota: " + catalog.nota(note, studentDeCautat));
 
         /*
          creeaza CreateMap astfel incat cautarea sa mearga fara a stii numarul matricol, avand doar obiectul de Student
@@ -167,19 +146,23 @@ public class Main {
 
         System.out.println("-------------------------------------------------------------------------------------------------");
 
-        int sumaNotelor = noteStudent.values().stream()
+        Optional<Integer> sumaNotelor = noteStudent.values().stream()
                 // Acum prin stream curg doar numere (ex: 8, 10, 9, 10)
-                .reduce(0, (acc, nota) -> acc + nota);
+                .reduce((acc, nota) -> acc + nota);
 
         int numarNote=noteStudent.size();
-        System.out.println("Media Notelor este: "+ sumaNotelor/(numarNote*1.0));
+        if(sumaNotelor.isPresent())
+            System.out.println("Media Notelor este: "+ sumaNotelor.get()/(numarNote*1.0));
+        else
+            System.out.println("Nu exista studenti.");
 
         System.out.println("-------------------------------------------------------------------------------------------------");
 
         Map<Integer, Integer> frecventaNote = noteStudent.values().stream()
-                .collect(Collectors.groupingBy(
-                        Function.identity(),
-                        Collectors.summingInt(nota -> 1) // Pentru fiecare notă, adunăm 1
+                .collect(Collectors.toMap(
+                        nota -> nota,
+                        numarAparitii -> 1,
+                        Integer::sum
                 ));
         System.out.println("Frecvența notelor este: ");
         frecventaNote.forEach((nota, numarAparitii) ->
@@ -208,6 +191,35 @@ public class Main {
         for(Student s:listaSemigrupa2){
             s.afiseaza();
         }
+
+        System.out.println("-------------------------------------------------------------------------------------------------");
+
+        Map<Integer, Integer> frecventaNoteSemigrupa1 = listaSemigrupa1.stream()
+                .map(student -> catalog.notaStudent(noteStudent, student))
+                .collect(Collectors.toMap(
+                        nota -> nota,
+                        numarAparitii -> 1,
+                        Integer::sum
+                ));
+        System.out.println("Frecventa notelor in semigrupa 1 este: ");
+        frecventaNoteSemigrupa1.forEach((nota, numarAparitii) ->
+                System.out.println("Nota " + nota + " apare de " + numarAparitii + " ori.")
+        );
+
+        System.out.println("-------------------------------------------------------------------------------------------------");
+
+        Map<Integer, Integer> frecventaNoteSemigrupa2 = listaSemigrupa2.stream()
+                .map(student -> catalog.notaStudent(noteStudent, student))
+                .collect(Collectors.toMap(
+                        nota -> nota,
+                        numarAparitii -> 1,
+                        Integer::sum
+                ));
+        System.out.println("Frecventa notelor in semigrupa 2 este: ");
+        frecventaNoteSemigrupa2.forEach((nota, numarAparitii) ->
+                System.out.println("Nota " + nota + " apare de " + numarAparitii + " ori.")
+        );
+
     }
     private static void exportList(List<Student> list, Exporter exporter){
         exporter.export(list);
@@ -228,31 +240,7 @@ public class Main {
 
     }
 
-    private static void importStudentiNote(List<Student> studenti, Map<Student, Integer> note, Import importer){
-        // Golim colecțiile primite pentru siguranță (opțional)
-        studenti.clear();
-        note.clear();
-
-        // Adăugăm TOATE elementele returnate de importer în lista originală
-        studenti.addAll(importer.importStudenti());
-
-        // Adăugăm TOATE perechile returnate de importer în map-ul original
-        note.putAll(importer.importNote(studenti));
-    }
-    private static Import getImporterFromFile(String... values){
-
-        System.out.println("Andreea");
-        String fileExtension=values[0].substring(values[0].lastIndexOf('.')).toLowerCase();
-        switch(fileExtension){
-            case ".xlsx":
-                return new ImportFromExcel(values[0]);
-            case ".csv":
-                return new ImportFromFile(values[0], values[1]);
-            default:
-                throw new IllegalArgumentException("Unknown file extension "+values[0]);
-        }
 
 
-    }
 
 }

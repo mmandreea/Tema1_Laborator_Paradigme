@@ -1,5 +1,6 @@
 package studentTest;
 
+import org.example.Catalog;
 import org.example.Student;
 import org.junit.jupiter.api.Test;
 
@@ -10,13 +11,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MainTest {
 
+    Catalog catalog = Catalog.getInstance();
     @Test
     void sortareStudentiDupaFormatieDeStudiuSiNumeTotiAuAceeasiFormatiune() {
 
         Student student1 = new Student("3568", "Andreea", "Mata", "C221");
         List<Student> studenti = new ArrayList<>();
         studenti = citire("StudentiFisierAceeasiFormatiune.csv");
-        sortareStudentiDupaFormatieDeStudiuSiNume(studenti);
+        catalog.sortareStudentiDupaFormatieDeStudiuSiNume(studenti);
         for (int i = 0; i < studenti.size() - 1; i++) {
             Student s1 = studenti.get(i);
             Student s2 = studenti.get(i + 1);
@@ -33,7 +35,7 @@ class MainTest {
         Student student1 = new Student("3568", "Andreea", "Mata", "C221");
         List<Student> studenti = new ArrayList<>();
         studenti = citire("StudentiFisier.csv");
-        sortareStudentiDupaFormatieDeStudiuSiNume(studenti);
+        catalog.sortareStudentiDupaFormatieDeStudiuSiNume(studenti);
         for (int i = 0; i < studenti.size() - 1; i++) {
             Student s1 = studenti.get(i);
             Student s2 = studenti.get(i + 1);
@@ -55,7 +57,7 @@ class MainTest {
         List<Student> studenti = new ArrayList<>();
         studenti = citire("StudentiFisier.csv");
         Set<Student> set = new HashSet<>(studenti); ///se copiaza lista in HashSet
-        assertEquals(true, prezenta(set, student1), "Studentul este prezent!");
+        assertEquals(true, catalog.prezenta(set, student1), "Studentul este prezent!");
     }
 
     @Test
@@ -64,7 +66,7 @@ class MainTest {
         List<Student> studenti = new ArrayList<>();
         studenti = citire("StudentiFisier.csv");
         Set<Student> set = new HashSet<>(studenti); ///se copiaza lista in HashSet
-        assertEquals(true, prezenta(set, student1), "Studentul este prezent!");
+        assertEquals(true, catalog.prezenta(set, student1), "Studentul este prezent!");
     }
 
     @Test
@@ -73,7 +75,7 @@ class MainTest {
         List<Student> studenti = new ArrayList<>();
         studenti = citire("StudentiFisier.csv");
         Set<Student> set = new HashSet<>(studenti); ///se copiaza lista in HashSet
-        assertEquals(false, prezenta(set, student1), "Studentul nu este prezent!");
+        assertEquals(false, catalog.prezenta(set, student1), "Studentul nu este prezent!");
     }
 
     @Test
